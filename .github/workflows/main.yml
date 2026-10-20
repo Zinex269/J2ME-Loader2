@@ -25,6 +25,22 @@ jobs:
           sed -i "s#<string name=\"app_name\">[^<]*</string>#<string name=\"app_name\">$APP_NAME</string>#" app/src/main/res/values/strings.xml || true
           grep -n 'name="app_name"' app/src/main/res/values/strings.xml || echo "app_name not found there; keeping the default name"
 
+      - name: Create a throwaway signing key (the build script expects one)
+        run: |
+          keytool -genkeypair -keystore "$PWD/ci.keystore" -alias ci -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=J2ME Console"
+          cat > keystore.properties <<EOF
+          storeFile=$PWD/ci.keystore
+          storePassword=android
+          keyAlias=ci
+          keyPassword=android
+          STORE_FILE=$PWD/ci.keystore
+          STORE_PASSWORD=android
+          KEYSTORE_PASSWORD=android
+          KEY_STORE_PASSWORD=android
+          KEY_ALIAS=ci
+          KEY_PASSWORD=android
+          EOF
+
       - name: Build the APK
         run: |
           set -o pipefail
@@ -46,3 +62,4 @@ jobs:
         with:
           name: j2me-console-apk
           path: app/build/outputs/apk/**/*.apk
+          
