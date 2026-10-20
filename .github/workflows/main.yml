@@ -20,10 +20,10 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Rename the app (display name only)
+      - name: Rename the app (display name only, optional)
         run: |
-          sed -i "s#<string name=\"app_name\">[^<]*</string>#<string name=\"app_name\">$APP_NAME</string>#" app/src/main/res/values/strings.xml
-          grep -n 'name="app_name"' app/src/main/res/values/strings.xml
+          sed -i "s#<string name=\"app_name\">[^<]*</string>#<string name=\"app_name\">$APP_NAME</string>#" app/src/main/res/values/strings.xml || true
+          grep -n 'name="app_name"' app/src/main/res/values/strings.xml || echo "app_name not found there; keeping the default name"
 
       - name: Build the APK
         run: |
